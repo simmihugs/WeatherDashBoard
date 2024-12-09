@@ -1,21 +1,29 @@
 """Welcome to Reflex! This file outlines the steps to create a basic app."""
 
 import reflex as rx
+from dataclasses import dataclass
+
+
+@dataclass
+class Person:
+    name: str
+    email: str
+    gender: str
 
 
 class People(rx.State):
-    people: list[tuple[str]] = [
-        ("Simon", "simon.peter@post.mail", "cool"),
-        ("Zahra Ambessa", "zahra@example.com", "Female"),
-        ("Danilo Sousa", "danilo@example.com", "Male"),
+    people: list[Person] = [
+        Person("Simon", "simon.peter@post.mail", "cool"),
+        Person("Zahra Ambessa", "zahra@example.com", "Female"),
+        Person("Danilo Sousa", "danilo@example.com", "Male"),
     ]
 
 
-def to_row(person: tuple[str]):
+def to_row(person: Person):
     return rx.table.row(
-        rx.table.column_header_cell(f"{person[0]}"),
-        rx.table.column_header_cell(f"{person[1]}"),
-        rx.table.column_header_cell(f"{person[2]}"),
+        rx.table.column_header_cell(f"{person.name}"),
+        rx.table.column_header_cell(f"{person.email}"),
+        rx.table.column_header_cell(f"{person.gender}"),
     )
 
 
@@ -31,6 +39,8 @@ def index() -> rx.Component:
         rx.table.body(
             rx.foreach(People.people, to_row),
         ),
+        variant="surface",
+        size="3",
     )
 
 
