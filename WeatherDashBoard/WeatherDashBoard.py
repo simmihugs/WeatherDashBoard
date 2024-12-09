@@ -18,6 +18,9 @@ class People(rx.State):
         Person("Danilo Sousa", "danilo@example.com", "Male"),
     ]
 
+    def add_person(self, form_data: dict):
+        self.people.append(Person(**form_data))
+
 
 def to_row(person: Person):
     return rx.table.row(
@@ -27,20 +30,40 @@ def to_row(person: Person):
     )
 
 
-def index() -> rx.Component:
-    return rx.table.root(
-        rx.table.header(
-            rx.table.row(
-                rx.table.column_header_cell("Name"),
-                rx.table.column_header_cell("Email"),
-                rx.table.column_header_cell("Gender"),
+def my_form():
+    return rx.form(
+        rx.vstack(
+            rx.input(placeholder="User Name", name="name", required=True),
+            rx.input(placeholder="user@reflex.dev", name="email"),
+            rx.select(
+                ["Male", "Female"],
+                placeholder="Female",
+                name="gender",
             ),
+            rx.button("Submit", type="submit"),
         ),
-        rx.table.body(
-            rx.foreach(People.people, to_row),
+        on_submit=People.add_person,
+        reset_on_submit=True,
+    )
+
+
+def index() -> rx.Component:
+    return rx.vstack(
+        rx.table.root(
+            rx.table.header(
+                rx.table.row(
+                    rx.table.column_header_cell("Name"),
+                    rx.table.column_header_cell("Email"),
+                    rx.table.column_header_cell("Gender"),
+                ),
+            ),
+            rx.table.body(
+                rx.foreach(People.people, to_row),
+            ),
+            variant="surface",
+            size="3",
         ),
-        variant="surface",
-        size="3",
+        my_form(),
     )
 
 
