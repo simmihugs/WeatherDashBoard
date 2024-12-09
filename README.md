@@ -18,4 +18,13 @@ source ./venv/bin/activate
 pip install . 
 ```
 
+## setup reflex
+```bash
+reflex init
+```
+
+## run dev mode
+```bash
+reflex run --loglevel debug
+```
 
