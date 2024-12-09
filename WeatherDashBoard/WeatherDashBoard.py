@@ -1,5 +1,6 @@
 """Welcome to Reflex! This file outlines the steps to create a basic app."""
 
+from collections import Counter
 import reflex as rx
 from dataclasses import dataclass
 
@@ -17,9 +18,30 @@ class People(rx.State):
         Person("Zahra Ambessa", "zahra@example.com", "Female"),
         Person("Danilo Sousa", "danilo@example.com", "Male"),
     ]
+    data: list[dict] = []
 
     def add_person(self, form_data: dict):
         self.people.append(Person(**form_data))
+        self.transform_data()
+
+    def transform_data(self):
+        counts = Counter(person.gender for person in self.people)
+        self.data = [{"name": gg, "value": count} for gg, count in counts.items()]
+
+
+def graph():
+    return rx.recharts.bar_chart(
+        rx.recharts.bar(
+            data_key="value",
+            stroke=rx.color("accent", 9),
+            fill=rx.color("accent", 8),
+        ),
+        rx.recharts.x_axis(data_key="name"),
+        rx.recharts.y_axis(),
+        data=People.data,
+        width="100%",
+        height=250,
+    )
 
 
 def to_row(person: Person):
@@ -74,23 +96,29 @@ def form():
 
 def index() -> rx.Component:
     return rx.vstack(
-        form(),
-        rx.table.root(
-            rx.table.header(
-                rx.table.row(
-                    rx.table.column_header_cell("Name"),
-                    rx.table.column_header_cell("Email"),
-                    rx.table.column_header_cell("Gender"),
+        rx.center(
+            rx.vstack(
+                form(),
+                rx.table.root(
+                    rx.table.header(
+                        rx.table.row(
+                            rx.table.column_header_cell("Name"),
+                            rx.table.column_header_cell("Email"),
+                            rx.table.column_header_cell("Gender"),
+                        ),
+                    ),
+                    rx.table.body(
+                        rx.foreach(People.people, to_row),
+                    ),
+                    variant="surface",
+                    size="1",
                 ),
             ),
-            rx.table.body(
-                rx.foreach(People.people, to_row),
-            ),
-            variant="surface",
-            size="3",
+            width="100%",
         ),
+        graph(),
     )
 
 
-app = rx.App()
+app = rx.App(theme=rx.theme(radius="full", accent_color="grass"))
 app.add_page(index)
