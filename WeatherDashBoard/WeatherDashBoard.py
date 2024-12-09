@@ -30,25 +30,51 @@ def to_row(person: Person):
     )
 
 
-def my_form():
-    return rx.form(
-        rx.vstack(
-            rx.input(placeholder="User Name", name="name", required=True),
-            rx.input(placeholder="user@reflex.dev", name="email"),
-            rx.select(
-                ["Male", "Female"],
-                placeholder="Female",
-                name="gender",
-            ),
-            rx.button("Submit", type="submit"),
+def form():
+    return rx.dialog.root(
+        rx.dialog.trigger(
+            rx.button(rx.icon("plus", size=26), rx.text("Add User", size="4")),
         ),
-        on_submit=People.add_person,
-        reset_on_submit=True,
+        rx.dialog.content(
+            rx.dialog.title(
+                "Add New User",
+            ),
+            rx.dialog.description(
+                "Fill the form with the user's info",
+            ),
+            rx.form(
+                rx.flex(
+                    rx.input(placeholder="User Name", name="name", required=True),
+                    rx.input(placeholder="user@reflex.dev", name="email"),
+                    rx.select(
+                        ["Male", "Female"],
+                        placeholder="Female",
+                        name="gender",
+                    ),
+                    rx.flex(
+                        rx.dialog.close(
+                            rx.button("Cancel", variant="soft", color_scheme="grass"),
+                        ),
+                        rx.dialog.close(
+                            rx.button("Submit", type="submit"),
+                        ),
+                        spacing="3",
+                        justify="end",
+                    ),
+                    direction="column",
+                    spacing="4",
+                ),
+                on_submit=People.add_person,
+                reset_on_submit=False,
+            ),
+            max_width="450px",
+        ),
     )
 
 
 def index() -> rx.Component:
     return rx.vstack(
+        form(),
         rx.table.root(
             rx.table.header(
                 rx.table.row(
@@ -63,7 +89,6 @@ def index() -> rx.Component:
             variant="surface",
             size="3",
         ),
-        my_form(),
     )
 
 
